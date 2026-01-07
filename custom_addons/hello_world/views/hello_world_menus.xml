@@ -1,0 +1,12 @@
+<odoo>
+  <!-- Top menu -->
+  <menuitem id="menu_hello_root" name="Hello"/>
+
+  <!-- Sub menu mở action -->
+  <menuitem
+    id="menu_hello_records"
+    name="Hello Records"
+    parent="menu_hello_root"
+    action="action_hello_world"
+  />
+</odoo>
