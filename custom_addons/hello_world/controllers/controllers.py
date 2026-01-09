@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-# from odoo import http
+from odoo import http
 
 
-# class HelloWorld(http.Controller):
-#     @http.route('/hello_world/hello_world/', auth='public')
-#     def index(self, **kw):
-#         return "Hello, world"
-
+class HelloWorld(http.Controller):
+    @http.route('/hello_world/hello_world/', auth='public', type='http')
+    def index(self, **kw):
+        return "Hello, world 123"
+    @http.route("/hello_world/ping", type="json", auth="public")
+    def ping(self):
+        return {"ok": True, "message": "pong"}
 #     @http.route('/hello_world/hello_world/objects/', auth='public')
 #     def list(self, **kw):
 #         return http.request.render('hello_world.listing', {
