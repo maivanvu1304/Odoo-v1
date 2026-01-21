@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 
 class WarrantyTicket(models.Model):
     _name = "warranty.ticket"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
     _description = "Warranty Ticket"
     _order = "id desc"
 
@@ -27,6 +28,13 @@ class WarrantyTicket(models.Model):
         ],
         string="Status",
         default="draft",
+        tracking=True,
+    )
+
+    user_id = fields.Many2one(
+        "res.users",
+        string="Assigned User",
+        default=lambda self: self.env.user,
         tracking=True,
     )
 
@@ -69,6 +77,7 @@ class WarrantyTicket(models.Model):
     def create(self, vals):
         if vals.get("name", "New") == "New":
             vals["name"] = self.env["ir.sequence"].next_by_code("warranty.ticket") or "New"
+        vals.setdefault("user_id", self.env.uid)
         return super().create(vals)
 
     # ===== State actions (buttons) =====

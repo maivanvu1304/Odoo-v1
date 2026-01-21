@@ -1,75 +1,177 @@
 <odoo>
 
-  <!-- Action -->
+  <!-- ========== ACTIONS ========== -->
+  
+  <!-- Main action: All tickets -->
   <record id="action_warranty_ticket" model="ir.actions.act_window">
     <field name="name">Warranty Tickets</field>
     <field name="res_model">warranty.ticket</field>
-    <field name="view_mode">tree,form</field>
+    <field name="view_mode">tree,form,kanban</field>
   </record>
 
-  <!-- Menus -->
-  <menuitem id="menu_warranty_root" name="Warranty" sequence="10"/>
-  <menuitem id="menu_warranty_tickets" name="Tickets" parent="menu_warranty_root" action="action_warranty_ticket" sequence="10"/>
+  <!-- Filtered action: In Progress tickets only -->
+  <record id="action_warranty_ticket_in_progress" model="ir.actions.act_window">
+    <field name="name">In Progress Tickets</field>
+    <field name="res_model">warranty.ticket</field>
+    <field name="view_mode">tree,form</field>
+    <field name="domain">[('state', '=', 'in_progress')]</field>
+    <field name="context">{'default_state': 'in_progress'}</field>
+  </record>
+
+  <!-- Filtered action: Expired warranties -->
+  <record id="action_warranty_ticket_expired" model="ir.actions.act_window">
+    <field name="name">Expired Warranties</field>
+    <field name="res_model">warranty.ticket</field>
+    <field name="view_mode">tree,form</field>
+    <field name="domain">[('expire_date', '&lt;', context_today())]</field>
+  </record>
+
+  <!-- Action: Draft tickets for managers -->
+  <record id="action_warranty_ticket_draft" model="ir.actions.act_window">
+    <field name="name">Draft Tickets</field>
+    <field name="res_model">warranty.ticket</field>
+    <field name="view_mode">tree,form</field>
+    <field name="domain">[('state', '=', 'draft')]</field>
+  </record>
+
+  <!-- ========== MENU STRUCTURE ========== -->
+  
+  <!-- 
+    ROOT MENU 
+    - Appears in top menu bar
+    - No action = just a container
+    - sequence: determines position (lower = more left)
+  -->
+  <menuitem 
+    id="menu_warranty_root" 
+    name="Warranty" 
+    sequence="10"
+    web_icon="warranty_management,static/description/icon.png"/>
+
+  <!-- 
+    LEVEL 1: Main submenu with action
+    - parent: links to root menu
+    - action: what opens when clicked
+  -->
+  <menuitem 
+    id="menu_warranty_tickets" 
+    name="Tickets" 
+    parent="menu_warranty_root" 
+    action="action_warranty_ticket" 
+    sequence="10"/>
+
+  <!-- 
+    LEVEL 1: Submenu without action (container for Level 2)
+    - No action = opens submenu only
+  -->
+  <menuitem 
+    id="menu_warranty_reports" 
+    name="Reports" 
+    parent="menu_warranty_root" 
+    sequence="20"/>
+
+  <!-- 
+    LEVEL 2: Nested submenu items under Reports
+  -->
+  <menuitem 
+    id="menu_warranty_report_in_progress" 
+    name="In Progress" 
+    parent="menu_warranty_reports" 
+    action="action_warranty_ticket_in_progress" 
+    sequence="10"/>
+
+  <menuitem 
+    id="menu_warranty_report_expired" 
+    name="Expired Warranties" 
+    parent="menu_warranty_reports" 
+    action="action_warranty_ticket_expired" 
+    sequence="20"/>
+
+  <!-- 
+    LEVEL 1: Configuration menu (only for Warranty Managers)
+    - groups: restricts visibility to specific security groups
+  -->
+  <menuitem 
+    id="menu_warranty_configuration" 
+    name="Configuration" 
+    parent="menu_warranty_root" 
+    sequence="90"
+    groups="warranty_management.group_warranty_manager"/>
+
+  <!-- 
+    LEVEL 2: Settings under Configuration
+  -->
+  <menuitem 
+    id="menu_warranty_draft_tickets" 
+    name="Draft Tickets" 
+    parent="menu_warranty_configuration" 
+    action="action_warranty_ticket_draft" 
+    sequence="10"
+    groups="warranty_management.group_warranty_manager"/>
+
 
   <!-- Search view -->
   <record id="view_warranty_ticket_search" model="ir.ui.view">
     <field name="name">warranty.ticket.search</field>
     <field name="model">warranty.ticket</field>
-    <field name="arch" type="xml">
+        <field name="arch" type="xml">
       <search>
         <field name="name"/>
         <field name="customer_id"/>
         <field name="product_id"/>
         <field name="serial_no"/>
+        <field name="user_id"/>
         <filter string="Expired" name="expired" domain="[('expire_date','&lt;', context_today())]"/>
         
         <group expand="0" string="Group By">
           <filter name="group_customer" string="Customer" context="{'group_by': 'customer_id'}"/>
           <filter name="group_product" string="Product" context="{'group_by': 'product_id'}"/>
           <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+          <filter name="group_user" string="Assigned User" context="{'group_by': 'user_id'}"/>
         </group>
       </search>
-    </field>
+        </field>
   </record>
 
   <!-- Tree view -->
   <record id="view_warranty_ticket_tree" model="ir.ui.view">
     <field name="name">warranty.ticket.tree</field>
     <field name="model">warranty.ticket</field>
-    <field name="arch" type="xml">
+        <field name="arch" type="xml">
       <tree>
         <field name="name"/>
         <field name="customer_id"/>
         <field name="product_id"/>
+        <field name="user_id"/>
         <field name="purchase_date"/>
         <field name="expire_date"/>
         <field name="state"/>
       </tree>
-    </field>
+        </field>
   </record>
 
   <!-- Form view -->
   <record id="view_warranty_ticket_form" model="ir.ui.view">
     <field name="name">warranty.ticket.form</field>
     <field name="model">warranty.ticket</field>
-    <field name="arch" type="xml">
+        <field name="arch" type="xml">
       <form string="Warranty Ticket">
         <header>
           <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,in_progress,done,cancel"/>
 
           <button name="action_confirm" type="object" string="Confirm" class="btn-primary"
-                  states="draft"/>
+                  states="draft" confirm="Are you sure you want to confirm this warranty ticket?"/>
           <button name="action_start" type="object" string="Start" class="btn-primary"
-                  states="confirmed"/>
+                  states="confirmed" confirm="Are you sure you want to start working on this ticket?"/>
           <button name="action_done" type="object" string="Done" class="btn-primary"
-                  states="in_progress"/>
+                  states="in_progress" confirm="Are you sure you want to mark this ticket as done?"/>
           <button name="action_open_close_wizard" type="object" string="Close with note"
                   class="btn-secondary" states="confirmed,in_progress"/>
 
           <button name="action_cancel" type="object" string="Cancel" class="btn-secondary"
-                  states="draft,confirmed,in_progress"/>
+                  states="draft,confirmed,in_progress" confirm="Are you sure you want to cancel this warranty ticket?"/>
           <button name="action_set_draft" type="object" string="Set to Draft" class="btn-secondary"
-                  states="cancel"/>
+                  states="cancel" confirm="Are you sure you want to reset this ticket to draft?"/>
         </header>
 
         <sheet>
@@ -79,6 +181,7 @@
             <field name="phone"/>
             <field name="product_id"/>
             <field name="serial_no"/>
+            <field name="user_id"/>
           </group>
 
           <group>
@@ -103,6 +206,11 @@
             </page>
           </notebook>
         </sheet>
+        <div class="oe_chatter">
+          <field name="message_follower_ids" widget="mail_followers"/>
+          <field name="activity_ids" widget="mail_activity"/>
+          <field name="message_ids" widget="mail_thread"/>
+        </div>
       </form>
     </field>
   </record>

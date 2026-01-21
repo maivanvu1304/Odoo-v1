@@ -21,14 +21,16 @@
 
     # any module necessary for this one to work correctly
     # product is required because tickets link to products via Many2one
-    'depends': ['base', 'product'],
+    'depends': ['base', 'mail', 'product'],
 
     # always loaded
     'data': [
+        "security/warranty_security.xml",
         "security/security.xml",
         "security/ir.model.access.csv",
         "data/sequence.xml",
         "views/warranty_ticket_views.xml",
+        "views/warranty_partner_views.xml",
         "wizard/warranty_close_wizard_views.xml",
     ],
     # only loaded in demonstration mode
