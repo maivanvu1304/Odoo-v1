@@ -29,9 +29,11 @@
         "security/security.xml",
         "security/ir.model.access.csv",
         "data/sequence.xml",
+        "report/warranty_ticket_report.xml",
         "views/warranty_ticket_views.xml",
         "views/warranty_partner_views.xml",
-        "wizard/warranty_close_wizard_views.xml",
+        "wizards/warranty_close_wizard_views.xml",
+        "wizards/warranty_report_wizard_views.xml",
     ],
     # only loaded in demonstration mode
     'demo': [

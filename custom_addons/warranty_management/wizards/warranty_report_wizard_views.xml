@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Report Wizard Form View -->
+    <record id="view_warranty_report_wizard_form" model="ir.ui.view">
+        <field name="name">warranty.report.wizard.form</field>
+        <field name="model">warranty.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Warranty Report">
+                <group>
+                    <group string="Date Range">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group string="Filters">
+                        <field name="partner_id"/>
+                        <field name="product_id"/>
+                        <field name="state"/>
+                        <field name="warranty_level"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_generate_report" 
+                            string="Generate PDF Report" 
+                            type="object" 
+                            class="btn-primary"/>
+                    <button name="action_view_tickets" 
+                            string="View Tickets" 
+                            type="object" 
+                            class="btn-secondary"/>
+                    <button string="Cancel" 
+                            class="btn-secondary" 
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open Report Wizard -->
+    <record id="action_warranty_report_wizard" model="ir.actions.act_window">
+        <field name="name">Warranty Report</field>
+        <field name="res_model">warranty.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu Item for Report Wizard -->
+    <menuitem id="menu_warranty_report_wizard"
+              name="Warranty Report"
+              parent="menu_warranty_reports"
+              action="action_warranty_report_wizard"
+              sequence="30"/>
+
+</odoo>

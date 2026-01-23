@@ -10,8 +10,23 @@ class WarrantyTicket(models.Model):
     _order = "id desc"
 
     name = fields.Char(string="Ticket No.", required=True, copy=False, readonly=True, default="New")
-    customer_id = fields.Many2one("res.partner", string="Customer", required=True)
+    customer_id = fields.Many2one("warranty.partner", string="Customer", required=True)
     phone = fields.Char(string="Phone", related="customer_id.phone", readonly=False, store=True)
+    warranty_level = fields.Selection(
+        related="customer_id.warranty_level",
+        string="Warranty Level",
+        store=True,
+    )
+    warranty_start_date = fields.Date(
+        related="customer_id.warranty_start_date",
+        string="Warranty Start Date",
+        store=True,
+    )
+    warranty_end_date = fields.Date(
+        related="customer_id.warranty_end_date",
+        string="Warranty End Date",
+        store=True,
+    )
     product_id = fields.Many2one("product.product", string="Product", required=True)
     serial_no = fields.Char(string="Serial/IMEI", required=True)
     purchase_date = fields.Date(string="Purchase Date", required=True)

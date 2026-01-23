@@ -5,3 +5,5 @@ access_warranty_ticket_manager,warranty.ticket manager,model_warranty_ticket,war
 access_warranty_ticket_line_manager,warranty.ticket.line manager,model_warranty_ticket_line,warranty_management.group_warranty_manager,1,1,1,1
 access_warranty_partner_user,warranty.partner user,model_warranty_partner,base.group_user,1,0,0,0
 access_warranty_partner_manager,warranty.partner manager,model_warranty_partner,warranty_management.group_warranty_manager,1,1,1,1
+access_warranty_close_wizard_user,warranty.close.wizard user,model_warranty_close_wizard,base.group_user,1,1,1,1
+access_warranty_report_wizard_user,warranty.report.wizard user,model_warranty_report_wizard,base.group_user,1,1,1,1
