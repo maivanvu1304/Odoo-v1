@@ -21,7 +21,7 @@
 
     # any module necessary for this one to work correctly
     # product is required because tickets link to products via Many2one
-    'depends': ['base', 'mail', 'product'],
+    'depends': ['base', 'mail', 'product', 'website'],
 
     # always loaded
     'data': [
@@ -32,8 +32,13 @@
         "report/warranty_ticket_report.xml",
         "views/warranty_ticket_views.xml",
         "views/warranty_partner_views.xml",
+        "views/warranty_web_templates.xml",
+        "views/assets.xml",
         "wizards/warranty_close_wizard_views.xml",
         "wizards/warranty_report_wizard_views.xml",
+    ],
+    'qweb': [
+        "static/src/xml/warranty_dashboard.xml",
     ],
     # only loaded in demonstration mode
     'demo': [

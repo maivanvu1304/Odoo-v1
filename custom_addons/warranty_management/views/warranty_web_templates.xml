@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template hiển thị danh sách warranty tickets -->
+    <template id="ticket_list_template" name="Warranty Tickets List">
+        <t t-call="website.layout">
+            <div class="container mt-5">
+                <h1 class="mb-4">Danh sách Warranty Tickets</h1>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-striped table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Ticket Number</th>
+                                    <th>Customer</th>
+                                    <th>Product</th>
+                                    <th>Serial/IMEI</th>
+                                    <th>Status</th>
+                                    <th>Assigned User</th>
+                                    <th>Created Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="tickets" t-as="ticket">
+                                    <tr>
+                                        <td><t t-esc="ticket.name"/></td>
+                                        <td><t t-esc="ticket.customer_id.name if ticket.customer_id else ''"/></td>
+                                        <td><t t-esc="ticket.product_id.name if ticket.product_id else ''"/></td>
+                                        <td><t t-esc="ticket.serial_no"/></td>
+                                        <td>
+                                            <span t-attf-class="badge bg-#{ticket.state == 'done' and 'success' or ticket.state == 'cancel' and 'danger' or 'warning'}">
+                                                <t t-esc="dict(ticket._fields['state'].selection).get(ticket.state)"/>
+                                            </span>
+                                        </td>
+                                        <td><t t-esc="ticket.user_id.name if ticket.user_id else ''"/></td>
+                                        <td><t t-esc="ticket.create_date.strftime('%Y-%m-%d %H:%M') if ticket.create_date else ''"/></td>
+                                        <td>
+                                            <a t-attf-href="/warranty/ticket/#{ticket.id}" class="btn btn-sm btn-primary">
+                                                View Details
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <t t-if="not tickets">
+                    <div class="alert alert-info">
+                        Không có warranty ticket nào.
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- Template hiển thị chi tiết warranty ticket -->
+    <template id="ticket_detail_template" name="Warranty Ticket Detail">
+        <t t-call="website.layout">
+            <div class="container mt-5">
+                <div class="row">
+                    <div class="col-12">
+                        <h1 class="mb-4">Chi tiết Warranty Ticket</h1>
+                        
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h3 class="mb-0"><t t-esc="ticket.name"/></h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <strong>Customer:</strong>
+                                        <p><t t-esc="ticket.customer_id.name if ticket.customer_id else 'N/A'"/></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Phone:</strong>
+                                        <p><t t-esc="ticket.phone or 'N/A'"/></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <strong>Product:</strong>
+                                        <p><t t-esc="ticket.product_id.name if ticket.product_id else 'N/A'"/></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Serial/IMEI:</strong>
+                                        <p><t t-esc="ticket.serial_no"/></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <strong>Status:</strong>
+                                        <p>
+                                            <span t-attf-class="badge bg-#{ticket.state == 'done' and 'success' or ticket.state == 'cancel' and 'danger' or 'warning'}">
+                                                <t t-esc="dict(ticket._fields['state'].selection).get(ticket.state)"/>
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Assigned User:</strong>
+                                        <p><t t-esc="ticket.user_id.name if ticket.user_id else 'N/A'"/></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <strong>Purchase Date:</strong>
+                                        <p><t t-esc="ticket.purchase_date.strftime('%Y-%m-%d') if ticket.purchase_date else 'N/A'"/></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Warranty Valid Until:</strong>
+                                        <p><t t-esc="ticket.expire_date.strftime('%Y-%m-%d') if ticket.expire_date else 'N/A'"/></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <strong>Warranty Months:</strong>
+                                        <p><t t-esc="ticket.warranty_months"/> months</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Warranty Level:</strong>
+                                        <p>
+                                            <t t-esc="dict(ticket._fields['warranty_level']._description_selection(ticket.env)).get(ticket.warranty_level) if ticket.warranty_level else 'N/A'"/>
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <strong>Created Date:</strong>
+                                        <p><t t-esc="ticket.create_date.strftime('%Y-%m-%d %H:%M') if ticket.create_date else 'N/A'"/></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Line Count:</strong>
+                                        <p><t t-esc="ticket.line_count"/> line(s)</p>
+                                    </div>
+                                </div>
+                                
+                                <t t-if="ticket.line_ids">
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <hr/>
+                                            <h5>Service Lines</h5>
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Description</th>
+                                                        <th>Technician</th>
+                                                        <th>Cost</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <t t-foreach="ticket.line_ids" t-as="line">
+                                                        <tr>
+                                                            <td><t t-esc="line.date.strftime('%Y-%m-%d %H:%M') if line.date else ''"/></td>
+                                                            <td><t t-esc="line.description"/></td>
+                                                            <td><t t-esc="line.technician_id.name if line.technician_id else 'N/A'"/></td>
+                                                            <td><t t-esc="line.cost"/> <t t-esc="line.currency_id.symbol if line.currency_id else ''"/></td>
+                                                        </tr>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </t>
+                                
+                                <div class="mt-4">
+                                    <a href="/warranty/tickets" class="btn btn-secondary">Back to List</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
