@@ -1,0 +1,50 @@
+<odoo>
+  <template id="report_warranty_ticket_doc">
+    <t t-call="web.external_layout">
+      <div class="page">
+        <main>
+          <t t-foreach="docs" t-as="ticket">
+            <h2>Warranty Ticket <t t-esc="ticket.name"/></h2>
+            <p>Customer: <t t-esc="ticket.customer_id.display_name"/></p>
+            <p>Product: <t t-esc="ticket.product_id.display_name"/></p>
+            <p>Serial/IMEI: <t t-esc="ticket.serial_no"/></p>
+            <p>Purchase Date: <t t-esc="ticket.purchase_date"/></p>
+            <p>Expire Date: <t t-esc="ticket.expire_date"/></p>
+            <p>Assigned: <t t-esc="ticket.user_id.display_name"/></p>
+            <p>Status: <t t-esc="ticket.state"/></p>
+
+            <h4>Lines</h4>
+            <table class="table table-sm">
+              <thead>
+                <tr><th>#</th><th>Date</th><th>Technician</th><th>Description</th><th>Cost</th></tr>
+              </thead>
+              <tbody>
+                <t t-foreach="ticket.line_ids" t-as="line" t-esc-options="{'widget': 'float'}">
+                  <tr>
+                    <td><t t-esc="line.sequence"/></td>
+                    <td><t t-esc="line.date"/></td>
+                    <td><t t-esc="line.technician_id.display_name"/></td>
+                    <td><t t-esc="line.description"/></td>
+                    <td class="text-end"><t t-esc="line.cost"/></td>
+                  </tr>
+                </t>
+              </tbody>
+            </table>
+            
+            <div style="page-break-after:always;" t-if="not ticket_last"></div>
+          </t>
+        </main>
+      </div>
+    </t>
+  </template>
+
+  <report
+    id="action_report_warranty_ticket"
+    model="warranty.ticket"
+    string="Warranty Ticket"
+    report_type="qweb-pdf"
+    name="warranty_management.report_warranty_ticket_doc"
+    file="warranty_management.report_warranty_ticket_doc"
+    print_report_name="'Warranty Ticket - %s' % (object.name)"
+  />
+</odoo>

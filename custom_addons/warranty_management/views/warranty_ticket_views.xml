@@ -141,6 +141,10 @@
       <tree>
         <field name="name"/>
         <field name="customer_id"/>
+        <field name="warranty_level"/>  <!-- Warranty level của khách hàng -->
+        <field name="warranty_start_date"/>
+        <field name="warranty_end_date"/>
+        <field name="phone"/>
         <field name="product_id"/>
         <field name="user_id"/>
         <field name="purchase_date"/>
@@ -148,6 +152,53 @@
         <field name="state"/>
       </tree>
         </field>
+  </record>
+
+  <!-- Kanban view -->
+  <record id="view_warranty_ticket_kanban" model="ir.ui.view">
+    <field name="name">warranty.ticket.kanban</field>
+    <field name="model">warranty.ticket</field>
+    <field name="arch" type="xml">
+      <kanban class="o_kanban_small_column">
+        <templates>
+          <t t-name="kanban-box">
+            <div class="o_kanban_record">
+              <div class="o_kanban_primary_bottom">
+                <div class="o_kanban_primary_left">
+                  <strong class="d-block">
+                    <field name="name"/>
+                  </strong>
+                  <span class="text-muted">
+                    <field name="customer_id"/>
+                  </span>
+                </div>
+                <div class="o_kanban_primary_right">
+                  <span class="badge badge-primary">
+                    <field name="state"/>
+                  </span>
+                </div>
+              </div>
+              <div class="o_kanban_secondary_bottom mt8">
+                <div class="d-flex justify-content-between">
+                  <span>
+                    <i class="fa fa-cube me-1" title="Product"/>
+                    <field name="product_id"/>
+                  </span>
+                  <span>
+                    <i class="fa fa-calendar me-1" title="Expire Date"/>
+                    <field name="expire_date"/>
+                  </span>
+                </div>
+                <div class="mt4">
+                  <i class="fa fa-user me-1" title="Assigned User"/>
+                  <field name="user_id"/>
+                </div>
+              </div>
+            </div>
+          </t>
+        </templates>
+      </kanban>
+    </field>
   </record>
 
   <!-- Form view -->
@@ -172,12 +223,18 @@
                   states="draft,confirmed,in_progress" confirm="Are you sure you want to cancel this warranty ticket?"/>
           <button name="action_set_draft" type="object" string="Set to Draft" class="btn-secondary"
                   states="cancel" confirm="Are you sure you want to reset this ticket to draft?"/>
+          <button name="%(action_report_warranty_ticket)d" type="action"
+                  string="Print Ticket" class="btn-secondary" states="confirmed,in_progress,done"/>
+
         </header>
 
         <sheet>
           <group>
             <field name="name" readonly="1"/>
             <field name="customer_id"/>
+            <field name="warranty_level"/>  <!-- Warranty level của khách hàng -->
+            <field name="warranty_start_date"/>
+            <field name="warranty_end_date"/>
             <field name="phone"/>
             <field name="product_id"/>
             <field name="serial_no"/>
